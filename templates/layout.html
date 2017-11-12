@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <title>唐山学院成绩查询</title>
+    <style>
+    html {
+        background-image: url('../static/bg.jpg');
+        background-size: 100% 100%;
+        min-height: 100%;
+    }
+    body {
+        font-family: Microsoft Yahei;
+        -webkit-font-smoothing: antialiased;
+        background: transparent;
+        color: #fff;
+        width: 100%;
+        height: 100%;
+    }
+    #header {
+        position: relative;
+        margin-top: 4%;
+        margin-bottom: 2%;
+    }
+    #content {
+        width:80%;
+        min-height: 20%;
+		margin-top: 3%;
+        margin-left:10%;
+        margin-right:10%;
+        margin-bottom: 1%;
+        z-index: 999;
+        
+    }
+
+    #content input {
+        z-index: 999;
+        border: none;
+        outline: none;
+        box-shadow: 1px 1px 1px rgba(20, 20, 20, 0.4);
+    }
+   
+    #content #xn,
+    #content #xn1,
+    #content #xq,
+    #content #search
+     {
+        width: 15%;
+        margin: 20px 20px;
+        vertical-align: top;
+        display: inline-block;
+       
+    }
+
+    #content #select
+    {
+        width: 20%;
+        margin: 20px 20px 20px 0px;
+        display: inline-block;
+        
+    }
+   
+    #content .cell {
+        padding: 8px;
+        padding-left: 12px;
+        color: rgb(90, 103, 121);
+        background-color: #fff;
+        font-size: 13px;
+        z-index: 999;
+        text-align: left;
+        display: block;
+    }
+    #content .cell:nth-of-type(2n) {
+        background-color: rgb(250, 251, 253);
+    }
+    
+    #content .cell:nth-of-type(2n + 1) {
+        background-color: rgb(255, 255, 255);
+    }
+    
+    #content .cell:first-child {
+        box-shadow: 0px -2px 2px rgba(20, 20, 20, 0.3);
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+    }
+    
+    #content .cell:hover {
+        cursor: pointer;
+        background-color: #50a3ba;
+        color: #fff;
+    }
+    
+    #content .select:hover {
+        cursor: pointer;
+    }
+    
+    #content .select.active {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+    
+    #content .div {
+        position: absolute;
+        bottom: 34px;
+        left: 0;
+        width: 100%;
+        display: none;
+        z-index: 999;
+    }
+
+    #content .btn {
+        z-index: 999;
+        box-shadow: 1px 1px 1px rgba(20, 20, 20, 0.4);
+        color: #555;
+        background-color: #f2f2f2;
+        outline: none;
+        border: none;
+        height: 34px;
+    }
+    #content .btn:hover {
+        background-color: #f2f2f2;
+    }
+	#result {
+        width: 80%;
+        margin-left: 10%;
+        margin-right: 10%;
+    }
+    </style>
+</head>
+        
+<body>
+    <div id="header">
+        <img src="../static/title.png" alt="" style="width:50%;margin-left:25%;margin-right:25%;opacity:1;position:relative;" id="title"> 
+    </div>
+    <div id="content" style="opacity:1;">
+        <form action="{{url_for('index')}}" method="post">
+            
+            <div style="position:relative;" id="select">
+                <div class="input-group">
+                    <span class="input-group-btn"> 
+                        <input type="button" name="select" value="学号" class="btn btn-default form-control select">
+                        <div class="div" name="select">
+                                <div class="cell" name="name">姓名</div>
+                                <div class="cell" name="number">学号</div>
+                        </div>
+                    </span>
+                    <input type="text" label='select' name="number" placeholder="学号" class="form-control"> 
+                </div>  
+            </div>
+            <div style="position:relative;" id="xn">
+                <input type="text" name="xn" placeholder="学年" class="form-control select" readOnly="true">
+                <div class="div" name="xn">
+                    <div class="cell">2015</div>
+                    <div class="cell">2016</div>
+                </div>
+            </div>
+            <div id="xn1">
+                    <input type="text" name="xn1" class="form-control" readOnly="true">
+            </div>
+            <div style="position:relative;" id="xq">
+                    <input type="text" name="xq" placeholder="学期" class="form-control select" readOnly="true">
+                    <div class="div" name="xq">
+                        <div class="cell">第一学期</div>
+                        <div class="cell">第二学期</div>
+                    </div>
+            </div>
+            <button  class="btn btn-default" disabled='' id="search">开始查询</button>
+        </form>
+    </div>
+    <div id="result">
+        {% block body %} {% endblock %} 
+    </div>
+</body>
+<script>
+$(document).ready(function(){
+
+    var selecting = false;
+    var select;
+    var value = '';
+    var xn = '';
+    var xq = '';
+
+
+    $('input[label="select"]').bind('input propertychange', function(event) {
+        value= $(this).val();
+
+        if (value != '' && xn != '' && xq != '') {
+            
+			$('#search').removeAttr("disabled"); 
+        }
+        else {
+            $('#search').attr('disabled',true);
+        }
+    });
+    $('.select').click(function(event) {
+        event.preventDefault();
+        if (!selecting) {
+            select = $(this).attr('name');
+            selecting = true;
+
+            $(this).addClass('active');
+            $(this).siblings('div.div').show();
+        }
+    });
+
+    $('.cell').click(function(event) {
+        event.preventDefault();
+        $(this).parent('div.div').hide();
+        var tmp = $(this).text();
+        var tmp1 = $(this).attr('name');
+
+        $('.select').removeClass('active');
+        $('.select[name="' + select + '"]').val(tmp);
+        if (select == 'xn') {
+            xn = tmp;
+            $('input[name="xn1"]').val(String(Number(xn) + 1));
+        } else if (select == 'xq') {
+            xq = tmp;
+        } else if (select == 'select') {
+            $('input[label="select"]').attr('placeholder',tmp);
+            $('input[label="select"]').attr('name',tmp1);
+        }
+        select = '';
+        selecting = false;
+        
+        if (value != '' && xn != '' && xq != '') {
+            
+			$('#search').removeAttr("disabled"); 
+        }
+        else {
+            $('#search').attr('disabled',true);
+        }
+    });
+	
+});
+</script>
+</html>

@@ -1,0 +1,68 @@
+{% extends 'layout.html' %}
+{% block body %} 
+<style>
+	.list-group-item span{
+		display: inline-block;
+		width: 130px;
+	}
+
+</style>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel" style="color:black">请选择：</h4>
+			</div>
+			<div class="modal-body" style="color:black">
+			<form>
+				<ul class="list-group">
+					{% for items in posts %}
+						<li class="list-group-item">
+							{% for item in items %}
+							<span>{{ item }} </span>
+							{% endfor %}
+						</li>
+					{% endfor %}
+				</ul>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="submit" class="btn btn-primary" id='confirm'>确定</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+<script>
+$(document).ready(function(){
+	
+	if ({{ label }} == 2){
+		alert("您要查找的姓名不存在！！！");
+	}
+	if ({{ label }}== 1){
+		
+		var number='';
+		var xn = '';
+		var xq = '';
+		$('#myModal').modal("show");
+		$('.list-group-item').click(function(event) {
+		event.preventDefault();
+		$('.list-group-item').removeClass('active');
+		$(this).addClass('active');
+		
+		number = $($(this).children('span').get(0)).text();
+	});	
+		$('#confirm').click(function(event){
+			event.preventDefault();
+			xn = {{ xn }};
+			xq = {{ xq }};
+			window.location.href = 'getscore/?number=' + number + '&xn=' + xn + '&xq=' + xq;
+		});
+	}
+	
+});
+</script>
+{% endblock %}
